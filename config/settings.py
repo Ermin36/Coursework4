@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'msg_client',
+    'send_track'
 ]
 
 MIDDLEWARE = [
