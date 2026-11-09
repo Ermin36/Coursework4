@@ -22,18 +22,18 @@ class ClientCreateView(CreateView):
     model = Client
     form_class = ClientForm
     template_name = 'client/create.html'
-    success_url = reverse_lazy('msg_client:clients')
+    success_url = reverse_lazy('msg_client:client_list')
 
 class ClientUpdateView(UpdateView):
     model = Client
     form_class = ClientForm
     template_name = 'client/update.html'
-    success_url = reverse_lazy('msg_client:clients')
+    success_url = reverse_lazy('msg_client:client_list')
 
 class ClientDeleteView(DeleteView):
     model = Client
     template_name = 'client/delete.html'
-    success_url = reverse_lazy('msg_client:clients')
+    success_url = reverse_lazy('msg_client:client_list')
 
 
 #Messages
@@ -51,7 +51,7 @@ class MessageCreateView(CreateView):
     model = Message
     form_class = MessageForm
     template_name = 'message/create.html'
-    success_url = reverse_lazy('msg_client:messages')
+    success_url = reverse_lazy('msg_client:message_list')
 
 class MessageUpdateView(UpdateView):
     model = Message
@@ -62,4 +62,4 @@ class MessageUpdateView(UpdateView):
 class MessageDeleteView(DeleteView):
     model = Message
     template_name = 'message/delete.html'
-    success_url = reverse_lazy('msg_client:messages')
+    success_url = reverse_lazy('msg_client:message_list')

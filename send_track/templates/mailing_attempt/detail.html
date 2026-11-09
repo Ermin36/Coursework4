@@ -56,7 +56,16 @@
                         <a href="{% url 'send_track:mailing_attempt_list' %}" class="btn btn-outline-secondary">
                             Назад к списку
                         </a>
+
+                        <form action="{% url 'send_track:mailing_attempt_delete' attempt.pk %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger"
+                                    onclick="return confirm('Удалить попытку №{{ attempt.pk }}? Это действие нельзя отменить.');">
+                                Удалить
+                            </button>
+                        </form>
                     </div>
+
                 </div>
             </div>
         </div>
