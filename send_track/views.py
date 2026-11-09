@@ -30,8 +30,9 @@ class Home(TemplateView):
 #Mailing Send
 class MailingSend(View):
 
-    def post(self, request, pk, **kwargs):
-        mailing: Mailing = get_object_or_404(Mailing, pk=kwargs['pk'])
+    def post(self, request, **kwargs):
+        pk = kwargs['pk']
+        mailing: Mailing = get_object_or_404(Mailing, pk=pk)
 
         outcome = send_mailing(mailing)
 
