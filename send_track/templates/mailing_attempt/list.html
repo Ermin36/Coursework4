@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-3">
+    <h2 class="text-white fw-bold mb-4">Статусы рассылок</h2>
+
+    {% if mailing_attempts %}
+        <div class="list-group bg-transparent border-0">
+            {% for attempt in mailing_attempts %}
+                <a href="{% url 'send_track:mailing_attempt_detail' attempt.pk %}"
+                   class="list-group-item bg-dark border-secondary text-white text-decoration-none mb-3 rounded-3 attempt-card">
+                    <div class="row g-3 align-items-center">
+                        <!-- Время попытки -->
+                        <div class="col-md-3 col-12">
+                            <span class="text-secondary small d-block text-uppercase fw-bold">Время попытки</span>
+                            <span class="fw-bold text-white fs-5">
+                                {{ attempt.attempt_time|date:"d.m.Y H:i" }}
+                            </span>
+                        </div>
+
+                        <!-- Рассылка -->
+                        <div class="col-md-4 col-12">
+                            <span class="text-secondary small d-block text-uppercase fw-bold">Рассылка</span>
+                            <span class="text-info fw-bold">
+                                №{{ attempt.mailing.pk }} — {{ attempt.mailing.message.topic }}
+                            </span>
+                        </div>
+
+                        <!-- Статус -->
+                        <div class="col-md-2 col-12">
+                            <span class="text-secondary small d-block text-uppercase fw-bold">Статус</span>
+                            <span class="badge
+                                {% if attempt.status == 'ok' %}bg-success{% endif %}
+                                {% if attempt.status == 'error' %}bg-danger{% endif %}
+                                text-uppercase fw-bold fs-6 px-3 py-2">
+                                {{ attempt.get_status_display }}
+                            </span>
+                        </div>
+
+                        <!-- Ответ сервера -->
+                        <div class="col-md-3 col-12">
+                            <span class="text-secondary small d-block text-uppercase fw-bold">Ответ сервера</span>
+                            {% if attempt.server_response %}
+                                <span class="text-white">{{ attempt.server_response|truncatechars:80 }}</span>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-muted">Попыток рассылки пока нет.</p>
+    {% endif %}
+</div>
+{% endblock %}

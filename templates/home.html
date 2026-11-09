@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1 class="display-1 fw-bold mb-4 text-uppercase">Mailer Pro</h1>
+    <p class="lead text-secondary mb-5">
+        Управление рассылками для клиентов и получения статистики в одном месте
+    </p>
+
+    <!-- Блок статистики -->
+    <div class="row g-4 w-100 justify-content-center mb-4" style="max-width: 900px;">
+        <div class="col-md-4 col-12">
+            <div class="card bg-dark border-secondary text-white h-100 text-center">
+                <div class="card-body p-4">
+                    <div class="text-secondary small text-uppercase fw-bold mb-2">
+                        Всего рассылок
+                    </div>
+                    <div class="display-5 fw-bold text-white">
+                        {{ total_mailings }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-12">
+            <div class="card bg-dark border-secondary text-white h-100 text-center">
+                <div class="card-body p-4">
+                    <div class="text-secondary small text-uppercase fw-bold mb-2">
+                        Активных рассылок
+                    </div>
+                    <div class="display-5 fw-bold text-success">
+                        {{ active_mailings }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-12">
+            <div class="card bg-dark border-secondary text-white h-100 text-center">
+                <div class="card-body p-4">
+                    <div class="text-secondary small text-uppercase fw-bold mb-2">
+                        Клиентов
+                    </div>
+                    <div class="display-5 fw-bold text-info">
+                        {{ total_clients }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Быстрые действия -->
+    <div class="d-flex gap-2 flex-wrap justify-content-center">
+        <a href="{% url 'send_track:mailing_list' %}" class="btn btn-outline-info">К рассылкам</a>
+        <a href="{% url 'msg_client:client_list' %}" class="btn btn-outline-info">К клиентам</a>
+    </div>
+{% endblock %}

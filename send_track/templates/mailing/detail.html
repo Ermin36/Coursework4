@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-3 mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-9 col-md-11 col-12">
+            <div class="card bg-dark border-secondary text-white">
+                <div class="card-header bg-transparent border-0 py-3">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                        <h3 class="mb-0 fw-bold">Рассылка №{{ mailing.pk }}</h3>
+                        <span class="badge
+                            {% if mailing.status == 'created' %}bg-secondary{% endif %}
+                            {% if mailing.status == 'launched' %}bg-success{% endif %}
+                            {% if mailing.status == 'completed' %}bg-primary{% endif %}
+                            text-uppercase fw-bold fs-6 px-3 py-2">
+                            {{ mailing.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Прогресс по времени -->
+                    <div class="mb-4">
+                        <div class="progress bg-secondary rounded-pill" style="height: 8px;">
+                            <div class="progress-bar bg-light rounded-pill"
+                                 role="progressbar"
+                                 style="width: {{ mailing.progress_percent }}%;"
+                                 aria-valuenow="{{ mailing.progress_percent|floatformat:1 }}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between mt-2">
+                            <small class="text-light fw-bold">
+                                Начало: {{ mailing.start_time|date:"d.m.Y H:i" }}
+                            </small>
+                            <small class="text-light fw-bold">
+                                Окончание: {{ mailing.end_time|date:"d.m.Y H:i" }}
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Сообщение -->
+                    <div class="border-bottom border-secondary pb-4 mb-4">
+                        <h5 class="fw-bold mb-3 text-info">Сообщение</h5>
+                        <p class="mb-1">
+                            <span class="text-secondary small d-block text-uppercase">Тема</span>
+                            <span class="h5 fw-bold text-white">{{ mailing.message.topic }}</span>
+                        </p>
+                        <p class="mb-0">
+                            <span class="text-secondary small d-block text-uppercase">Текст</span>
+                            <span class="text-white" style="white-space: pre-line;">{{ mailing.message.description }}</span>
+                        </p>
+                    </div>
+
+                    <!-- Получатели -->
+                    <div class="border-bottom border-secondary pb-4 mb-4">
+                        <h5 class="fw-bold mb-3 text-info">Получатели</h5>
+                        <span class="text-secondary small d-block">Количество клиентов</span>
+                        <span class="fw-bold text-white fs-4">{{ mailing.recipients.count }}</span>
+
+                        {% if mailing.recipients.all %}
+                            <ul class="list-unstyled mt-3 mb-0">
+                                {% for client in mailing.recipients.all %}
+                                    <li class="mb-1">
+                                        <a href="{% url 'msg_client:client_detail' client.pk %}"
+                                           class="text-info text-decoration-none">
+                                            {{ client.last_name }} {{ client.first_name }} — {{ client.email }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+
+                    <!-- Попытки рассылки -->
+                    {% if mailing.attempts.all %}
+                        <div class="border-bottom border-secondary pb-4 mb-4">
+                            <h5 class="fw-bold mb-3 text-info">История попыток</h5>
+                            <ul class="list-unstyled mb-0">
+                                {% for attempt in mailing.attempts.all %}
+                                    <li class="mb-1">
+                                        <a href="{% url 'send_track:mailing_attempt_detail' attempt.pk %}"
+                                           class="text-decoration-none">
+                                            <span class="{% if attempt.status == 'ok' %}text-success{% else %}text-danger{% endif %}">
+                                                {{ attempt.attempt_time|date:"d.m.Y H:i:s" }} — {{ attempt.get_status_display }}
+                                            </span>
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <!-- Действия -->
+                    <div class="pt-4 border-top border-secondary">
+                        <div class="d-flex gap-2 flex-wrap">
+                            {% if user.is_superuser or mailing.owner == user %}
+                                <a href="{% url 'send_track:mailing_update' mailing.pk %}" class="btn btn-outline-warning">
+                                    Изменить
+                                </a>
+
+                                {% if mailing.status != 'completed' and mailing.status != 'created' %}
+                                <form action="{% url 'send_track:mailing_send' mailing.pk %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-success"
+                                            onclick="return confirm('Отправить рассылку «{{ mailing.message.topic }}»?');">
+                                        Отправить
+                                    </button>
+                                </form>
+                                {% endif %}
+
+                                <form action="{% url 'send_track:mailing_delete' mailing.pk %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger"
+                                            onclick="return confirm('Удалить рассылку №{{ mailing.pk }}? Это действие нельзя отменить.');">
+                                        Удалить
+                                    </button>
+                                </form>
+                            {% endif %}
+                            <a href="{% url 'send_track:mailing_list' %}" class="btn btn-outline-secondary">Назад к списку</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
