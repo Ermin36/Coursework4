@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Заголовок и кнопка создания -->
+<div class="w-100 d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-white fw-bold mb-0">Клиенты</h2>
+    <a href="{% url 'msg_client:client_create' %}" class="btn btn-primary">Добавить клиента</a>
+</div>
+
+{% if clients %}
+    <div class="row g-4 w-100">
+        {% for client in clients %}
+            <div class="col-md-4 col-sm-6 col-12">
+                <div class="card h-100 bg-dark border-secondary text-white position-relative attempt-card"
+                     onclick="window.location.href='{% url 'msg_client:client_detail' client.pk %}';">
+
+                    <!-- Крестик удаления — слева сверху -->
+                    <form action="{% url 'msg_client:client_delete' client.pk %}"
+                          method="post"
+                          class="position-absolute top-0 start-0 p-2 m-1">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="btn-close btn-close-white"
+                                title="Удалить клиента"
+                                aria-label="Удалить клиента"
+                                onclick="event.stopPropagation(); return confirm('Удалить клиента «{{ client.last_name }} {{ client.first_name }}»?');">
+                        </button>
+                    </form>
+
+                    <div class="card-body d-flex flex-column ps-5">
+                        <!-- Аватар-заглушка с первой буквой имени -->
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="rounded-circle bg-secondary d-flex justify-content-center align-items-center me-3"
+                                 style="width: 48px; height: 48px; font-size: 1.2rem; font-weight: bold;">
+                                {{ client.first_name|first|upper }}
+                            </div>
+                            <!-- Сборка полного ФИО -->
+                            <h5 class="card-title mb-0 fw-bold">
+                                {{ client.last_name }} {{ client.first_name }}{% if client.middle_name %} {{ client.middle_name }}{% endif %}
+                            </h5>
+                        </div>
+
+                        <!-- Email -->
+                        <p class="mb-2">
+                            <span class="text-secondary small d-block">Email</span>
+                            <a href="mailto:{{ client.email }}"
+                               class="text-info text-decoration-none"
+                               onclick="event.stopPropagation();">
+                                {{ client.email }}
+                            </a>
+                        </p>
+
+                        <!-- Комментарий -->
+                        {% if client.comment %}
+                            <p class="mb-2">
+                                <span class="text-secondary small d-block">Комментарий</span>
+                                <span class="text-white">{{ client.comment|truncatechars:100 }}</span>
+                            </p>
+                        {% endif %}
+
+                        <!-- Подсказка перехода -->
+                        <div class="mt-auto pt-3 border-top border-secondary">
+                            <span class="text-info small">Подробнее →</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="text-muted">Клиентов пока нет.</p>
+{% endif %}
+
+{% endblock %}

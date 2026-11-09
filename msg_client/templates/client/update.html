@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid px-3 mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10 col-12">
+            <div class="card bg-dark border-secondary text-white">
+                <div class="card-header bg-transparent border-0 py-3">
+                    <h3 class="mb-0 fw-bold">Редактировать клиента</h3>
+                </div>
+
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <!-- Блок: ФИО -->
+                        <div class="border-bottom border-secondary pb-4 mb-4">
+                            <h5 class="fw-bold mb-3 text-info">Персональные данные</h5>
+
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label for="{{ form.last_name.id_for_label }}" class="form-label text-white">Фамилия</label>
+                                    {{ form.last_name }}
+                                    {% if form.last_name.errors %}
+                                        <div class="text-danger small mt-1">{{ form.last_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="{{ form.first_name.id_for_label }}" class="form-label text-white">Имя</label>
+                                    {{ form.first_name }}
+                                    {% if form.first_name.errors %}
+                                        <div class="text-danger small mt-1">{{ form.first_name.errors }}</div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="{{ form.middle_name.id_for_label }}" class="form-label text-white">Отчество</label>
+                                    {{ form.middle_name }}
+                                    {% if form.middle_name.errors %}
+                                        <div class="text-danger small mt-1">{{ form.middle_name.errors }}</div>
+                                    {% endif %}
+                                    <small class="text-muted small d-block">Необязательно</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Блок: Email -->
+                        <div class="border-bottom border-secondary pb-4 mb-4">
+                            <h5 class="fw-bold mb-3 text-info">Контактная информация</h5>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <label for="{{ form.email.id_for_label }}" class="form-label text-white">Email</label>
+                                    {{ form.email }}
+                                    {% if form.email.errors %}
+                                        <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Блок: Комментарий -->
+                        <div class="mb-4">
+                            <h5 class="fw-bold mb-3 text-info">Комментарий / описание</h5>
+                            <label for="{{ form.comment.id_for_label }}" class="form-label text-white">Примечания</label>
+                            {{ form.comment }}
+                            {% if form.comment.errors %}
+                                <div class="text-danger small mt-1">{{ form.comment.errors }}</div>
+                            {% endif %}
+                            <small class="text-muted small d-block">История взаимодействия, важные детали, особые требования клиента.</small>
+                        </div>
+
+                        <!-- Кнопки действий -->
+                        <div class="pt-4 border-top border-secondary d-flex gap-2 flex-wrap">
+                            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                            <a href="{% url 'msg_client:client_detail' client.pk %}" class="btn btn-outline-secondary">Отмена</a>
+                            <a href="{% url 'msg_client:client_list' %}" class="btn btn-outline-light">К списку клиентов</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

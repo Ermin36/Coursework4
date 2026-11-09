@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Заголовок и кнопка создания -->
+<div class="w-100 d-flex justify-content-between align-items-center mb-4">
+    <h2 class="text-white fw-bold mb-0">Сообщения</h2>
+    <a href="{% url 'msg_client:message_create' %}" class="btn btn-primary">Создать сообщение</a>
+</div>
+
+{% if messages %}
+    <div class="row g-4 w-100">
+        {% for message in messages %}
+            <div class="col-md-6 col-12">
+                <div class="card h-100 bg-dark border-secondary text-white position-relative attempt-card"
+                     onclick="window.location.href='{% url 'msg_client:message_detail' message.pk %}';">
+
+                    <!-- Крестик удаления — слева сверху -->
+                    <form action="{% url 'msg_client:message_delete' message.pk %}"
+                          method="post"
+                          class="position-absolute top-0 start-0 p-2 m-1">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="btn-close btn-close-white"
+                                title="Удалить сообщение"
+                                aria-label="Удалить сообщение"
+                                onclick="event.stopPropagation(); return confirm('Удалить сообщение «{{ message.topic }}»?');">
+                        </button>
+                    </form>
+
+                    <div class="card-body d-flex flex-column ps-5">
+                        <!-- Иконка и тема -->
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="rounded-circle bg-secondary d-flex justify-content-center align-items-center me-3"
+                                 style="width: 48px; height: 48px; font-size: 1.2rem;">
+                                ✉️
+                            </div>
+                            <h5 class="card-title mb-0 fw-bold text-info">{{ message.topic }}</h5>
+                        </div>
+
+                        <!-- Текст сообщения -->
+                        <p class="text-white mb-2">
+                            {{ message.description|truncatechars:200 }}
+                        </p>
+
+                        <!-- Ссылка на детальную страницу -->
+                        <div class="mt-auto pt-3 border-top border-secondary">
+                            <span class="text-info small">Подробнее →</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="text-muted">Сообщений пока нет.</p>
+{% endif %}
+
+{% endblock %}
