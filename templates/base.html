@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MailerPro</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.min.css">
+
+    {% include 'blocks/stiles.html' %}
+</head>
+<body class="bg-black text-white">
+
+    <div class="container-fluid">
+        <!-- Шапка -->
+        <header class="pt-4 px-3">
+            <div class="row justify-content-between align-items-center">
+                <div class="col-auto">
+                    <a href="{% url 'send_track:home' %}" class="text-decoration-none text-uppercase fw-bold fs-5 text-white">MailerPro</a>
+                </div>
+
+                {% include 'blocks/bottom.html' %}
+            </div>
+        </header>
+
+        <!-- Главный экран -->
+        <!-- Основной контент страницы -->
+        <main class="vh-100 d-flex flex-column justify-content-center align-items-center text-center px-3">
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- Футер -->
+        {% include 'blocks/footer.html' %}
+    </div>
+
+    <script src="/static/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

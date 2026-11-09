@@ -1,0 +1,15 @@
+<!-- Выпадающий список -->
+                <div class="col-auto d-none d-md-block">
+                    <div class="dropdown">
+                        <button class="btn btn-outline-light px-3 fs-6 dropdown-toggle" type="button" id="mobileMenuBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                            Меню
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary text-white" aria-labelledby="mobileMenuBtn">
+                            <li><a class="dropdown-item text-white text-uppercase fw-medium" href="{% url 'send_track:home' %}">Главная</a></li>
+                            <li><a class="dropdown-item text-white text-uppercase fw-medium" href="{% url 'send_track:mailing_list' %}">Рассылки</a></li>
+                            <li><a class="dropdown-item text-white text-uppercase fw-medium" href="{% url 'msg_client:message_list' %}">Сообщения</a></li>
+                            <li><a class="dropdown-item text-white text-uppercase fw-medium" href="{% url 'msg_client:client_list' %}">Клиенты</a></li>
+                            <li><a class="dropdown-item text-white text-uppercase fw-medium" href="{% url 'send_track:mailing_attempt_list' %}">Статистика</a></li>
+                        </ul>
+                    </div>
+                </div>
