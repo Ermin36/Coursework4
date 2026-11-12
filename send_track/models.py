@@ -102,5 +102,5 @@ class MailingAttempt(models.Model):
         verbose_name = 'Статус рассылки'
         verbose_name_plural = 'Статусы рассылок'
         permissions = [
-            ('view_all_mailings', 'Может просматривать все попытки'),
+            ('view_all_mailingattempts', 'Может просматривать все попытки'),
         ]

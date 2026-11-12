@@ -11,6 +11,23 @@ from .models import CustomUser
 from .forms import CustomUserCreationForm, CustomUserAuthenticationForm
 
 # Create your views here.
+class ManagerMixin(LoginRequiredMixin):
+    owner = 'created_by'
+    perms = None
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        user: CustomUser = self.request.user
+
+        if user.is_superuser:
+            return qs
+
+        if self.perms:
+            if all(user.has_perms(perm) for perm in self.perms):
+                return qs
+
+        return qs.filter(**{self.owner: user})
+
 class RegistrationView(FormView):
     template_name = 'register.html'
     form_class = CustomUserCreationForm

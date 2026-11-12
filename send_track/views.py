@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from msg_client.models import Client
+from users.views import ManagerMixin
 from .models import Mailing, MailingAttempt
 from .forms import MailingForm
 from .services import send_mailing, send_active_mailings
@@ -118,7 +119,9 @@ class MailingDelete(LoginRequiredMixin, DeleteView):
     template_name = 'mailing/delete.html'
     success_url = reverse_lazy('send_track:mailing_list')
 
-class MailingList(LoginRequiredMixin, ListView):
+class MailingList(ManagerMixin, ListView):
+    owner = 'created_by'
+    perms = ('send_track.view_all_mailings',)
     model = Mailing
     template_name = 'mailing/list.html'
     context_object_name = 'mailings'
@@ -142,7 +145,9 @@ class MailingAttemptDelete(LoginRequiredMixin, DeleteView):
     context_object_name = 'mailing_attempt'
     success_url = reverse_lazy('send_track:mailing_attempt_list')
 
-class MailingAttemptList(LoginRequiredMixin, ListView):
+class MailingAttemptList(ManagerMixin, ListView):
+    owner = 'mailing__created_by'
+    perms = ('send_track.view_all_mailingattempts',)
     model = MailingAttempt
     template_name = 'mailing_attempt/list.html'
     context_object_name = 'mailing_attempts'

@@ -5,10 +5,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from msg_client.forms import MessageForm, ClientForm
 from msg_client.models import Client, Message
+from users.views import ManagerMixin
+
 
 # Create your views here.
 #Clients
-class ClientListView(LoginRequiredMixin, ListView):
+class ClientListView(ManagerMixin, ListView):
+    owner = 'created_by'
+    perms = ('msg_client.view_all_clients',)
     model = Client
     template_name = 'client/list.html'
     context_object_name = 'clients'
