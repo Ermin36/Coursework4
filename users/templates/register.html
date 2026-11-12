@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="col-md-6 col-lg-5">
+    <div class="card bg-dark border-secondary">
+        <div class="card-body p-4">
+
+            <h3 class="text-center text-uppercase fw-bold mb-4">Регистрация</h3>
+
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger py-2">
+                        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary small">Email</label>
+                    {{ form.email }}
+                    {% for error in form.email.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary small">Пароль</label>
+                    {{ form.password1 }}
+                    {% if form.password1.help_text %}
+                        <div class="form-text text-secondary">{{ form.password1.help_text }}</div>
+                    {% endif %}
+                    {% for error in form.password1.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary small">Подтверждение пароля</label>
+                    {{ form.password2 }}
+                    {% for error in form.password2.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary small">Телефон</label>
+                    {{ form.phone_number }}
+                    {% for error in form.phone_number.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-secondary small">Аватар</label>
+                    {{ form.image }}
+                    {% for error in form.image.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-light text-uppercase fw-bold">Зарегистрироваться</button>
+                </div>
+            </form>
+
+        </div>
+        <div class="card-footer bg-transparent border-top border-secondary text-center py-3">
+            <span class="text-secondary">Уже есть аккаунт?</span>
+            <a href="{% url 'users:login' %}" class="text-info text-decoration-none fw-medium">Войти</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

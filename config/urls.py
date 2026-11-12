@@ -7,6 +7,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('send_track.urls', namespace='send_track')),
     path('', include('msg_client.urls', namespace='msg_client')),
+    path('', include('users.urls', namespace='users')),
 ]
 
 if settings.DEBUG:

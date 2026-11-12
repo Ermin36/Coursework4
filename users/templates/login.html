@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="col-md-6 col-lg-4">
+    <div class="card bg-dark border-secondary">
+        <div class="card-body p-4">
+
+            <h3 class="text-center text-uppercase fw-bold mb-4">Вход</h3>
+
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger py-2">
+                        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary small">Email</label>
+                    {{ form.username }}
+                    {% for error in form.username.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-secondary small">Пароль</label>
+                    {{ form.password }}
+                    {% for error in form.password.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-light text-uppercase fw-bold">Войти</button>
+                </div>
+            </form>
+
+        </div>
+        <div class="card-footer bg-transparent border-top border-secondary text-center py-3">
+            <span class="text-secondary">Нет аккаунта?</span>
+            <a href="{% url 'users:register' %}" class="text-info text-decoration-none fw-medium">Зарегистрироваться</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
