@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.views.generic import ListView, TemplateView, CreateView, UpdateView, DetailView, DeleteView, View
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from msg_client.models import Client
 from .models import Mailing, MailingAttempt
@@ -28,7 +29,7 @@ class Home(TemplateView):
 
 
 #Mailing Send
-class MailingSend(View):
+class MailingSend(LoginRequiredMixin, View):
 
     def post(self, request, **kwargs):
         pk = kwargs['pk']
@@ -53,7 +54,7 @@ class MailingSend(View):
         return redirect('send_track:mailing_detail', pk=pk)
 
 
-class MailingSendAll(View):
+class MailingSendAll(LoginRequiredMixin, View):
 
     def post(self, request, **kwargs):
         outcome = send_active_mailings()
@@ -76,21 +77,21 @@ class MailingSendAll(View):
 
 
 #Mailing Data
-class MailingCreate(CreateView):
+class MailingCreate(LoginRequiredMixin, CreateView):
     template_name = 'mailing/create.html'
     model = Mailing
     form_class = MailingForm
     context_object_name = 'mailing'
     success_url = reverse_lazy('send_track:mailing_list')
 
-class MailingUpdate(UpdateView):
+class MailingUpdate(LoginRequiredMixin, UpdateView):
     template_name = 'mailing/update.html'
     model = Mailing
     form_class = MailingForm
     context_object_name = 'mailing'
     success_url = reverse_lazy('send_track:mailing_list')
 
-class MailingDetail(DetailView):
+class MailingDetail(LoginRequiredMixin, DetailView):
     model = Mailing
     template_name = 'mailing/detail.html'
     context_object_name = 'mailing'
@@ -108,12 +109,12 @@ class MailingDetail(DetailView):
         context['success_attempts'] = mailing.attempts.filter(status='ok').count()
         return context
 
-class MailingDelete(DeleteView):
+class MailingDelete(LoginRequiredMixin, DeleteView):
     model = Mailing
     template_name = 'mailing/delete.html'
     success_url = reverse_lazy('send_track:mailing_list')
 
-class MailingList(ListView):
+class MailingList(LoginRequiredMixin, ListView):
     model = Mailing
     template_name = 'mailing/list.html'
     context_object_name = 'mailings'
@@ -126,32 +127,32 @@ class MailingList(ListView):
 
 
 #MailingAttempt Data
-class MailingAttemptCreate(CreateView):
+class MailingAttemptCreate(LoginRequiredMixin, CreateView):
     model = MailingAttempt
     form_class = MailingAttemptForm
     template_name = 'mailing_attempt/create.html'
     context_object_name = 'attempt'
     success_url = reverse_lazy('send_track:mailing_attempt_list')
 
-class MailingAttemptUpdate(UpdateView):
+class MailingAttemptUpdate(LoginRequiredMixin, UpdateView):
     model = MailingAttempt
     form_class = MailingAttemptForm
     template_name = 'mailing_attempt/update.html'
     context_object_name = 'attempt'
     success_url = reverse_lazy('send_track:mailing_attempt_list')
 
-class MailingAttemptDetail(DetailView):
+class MailingAttemptDetail(LoginRequiredMixin, DetailView):
     model = MailingAttempt
     template_name = 'mailing_attempt/detail.html'
     context_object_name = 'attempt'
 
-class MailingAttemptDelete(DeleteView):
+class MailingAttemptDelete(LoginRequiredMixin, DeleteView):
     model = MailingAttempt
     template_name = 'mailing_attempt/delete.html'
     context_object_name = 'mailing_attempt'
     success_url = reverse_lazy('send_track:mailing_attempt_list')
 
-class MailingAttemptList(ListView):
+class MailingAttemptList(LoginRequiredMixin, ListView):
     model = MailingAttempt
     template_name = 'mailing_attempt/list.html'
     context_object_name = 'mailing_attempts'
