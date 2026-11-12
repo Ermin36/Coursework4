@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from msg_client.forms import MessageForm, ClientForm
 from msg_client.models import Client, Message
-from users.views import ManagerMixin
+from users.mixins import ManagerMixin, OwnerOnlyMixin
 
 
 # Create your views here.
@@ -32,13 +32,13 @@ class ClientCreateView(LoginRequiredMixin, CreateView):
         form.instance.created_by = self.request.user
         return super().form_valid(form)
 
-class ClientUpdateView(LoginRequiredMixin, UpdateView):
+class ClientUpdateView(OwnerOnlyMixin, UpdateView):
     model = Client
     form_class = ClientForm
     template_name = 'client/update.html'
     success_url = reverse_lazy('msg_client:client_list')
 
-class ClientDeleteView(LoginRequiredMixin, DeleteView):
+class ClientDeleteView(OwnerOnlyMixin, DeleteView):
     model = Client
     template_name = 'client/delete.html'
     success_url = reverse_lazy('msg_client:client_list')

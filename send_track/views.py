@@ -1,3 +1,4 @@
+from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.utils import timezone
@@ -7,7 +8,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from msg_client.models import Client
-from users.views import ManagerMixin
+from users.mixins import ManagerMixin, OwnerOnlyMixin
 from .models import Mailing, MailingAttempt
 from .forms import MailingForm
 from .services import send_mailing, send_active_mailings
@@ -109,7 +110,7 @@ class MailingCreate(LoginRequiredMixin, CreateView):
         form.instance.created_by = self.request.user
         return super().form_valid(form)
 
-class MailingUpdate(LoginRequiredMixin, UpdateView):
+class MailingUpdate(OwnerOnlyMixin, UpdateView):
     template_name = 'mailing/update.html'
     model = Mailing
     form_class = MailingForm
@@ -134,7 +135,7 @@ class MailingDetail(LoginRequiredMixin, DetailView):
         context['success_attempts'] = mailing.attempts.filter(status='ok').count()
         return context
 
-class MailingDelete(LoginRequiredMixin, DeleteView):
+class MailingDelete(OwnerOnlyMixin, DeleteView):
     model = Mailing
     template_name = 'mailing/delete.html'
     success_url = reverse_lazy('send_track:mailing_list')
@@ -164,6 +165,12 @@ class MailingAttemptDelete(LoginRequiredMixin, DeleteView):
     template_name = 'mailing_attempt/delete.html'
     context_object_name = 'mailing_attempt'
     success_url = reverse_lazy('send_track:mailing_attempt_list')
+
+    def get_object(self, queryset=None):
+        obj = get_object_or_404(MailingAttempt.objects.select_related('mailing'), pk=self.kwargs['pk'])
+        if obj.mailing.created_by != self.request.user:
+            raise PermissionDenied
+        return obj
 
 class MailingAttemptList(ManagerMixin, ListView):
     owner = 'mailing__created_by'

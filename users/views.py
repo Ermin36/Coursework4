@@ -10,24 +10,8 @@ from django.contrib.auth.views import LoginView, LogoutView
 from .models import CustomUser
 from .forms import CustomUserCreationForm, CustomUserAuthenticationForm
 
+
 # Create your views here.
-class ManagerMixin(LoginRequiredMixin):
-    owner = 'created_by'
-    perms = None
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        user: CustomUser = self.request.user
-
-        if user.is_superuser:
-            return qs
-
-        if self.perms:
-            if all(user.has_perms(perm) for perm in self.perms):
-                return qs
-
-        return qs.filter(**{self.owner: user})
-
 class RegistrationView(FormView):
     template_name = 'register.html'
     form_class = CustomUserCreationForm
@@ -38,6 +22,7 @@ class RegistrationView(FormView):
         login(self.request, user)
 
         return super().form_valid(form)
+
 
 class CustomLoginView(LoginView):
     template_name = 'login.html'
@@ -51,6 +36,7 @@ class CustomLoginView(LoginView):
     def get_success_url(self):
         return reverse_lazy('send_track:home')
 
+
 class CustomLogoutView(LogoutView):
     #template_name = 'logout.html'
     next_page = reverse_lazy('send_track:home')
@@ -63,10 +49,12 @@ class ManagerRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
         user = self.request.user
         return user.is_superuser or user.groups.filter(name='Manager').exists()
 
+
 class CustomUserList(ManagerRequiredMixin, ListView):
     model = CustomUser
     template_name = 'user/list.html'
     context_object_name = 'users'
+
 
 class UserBlockToggleView(ManagerRequiredMixin, View):
     def post(self, request, pk):
