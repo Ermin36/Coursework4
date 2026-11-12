@@ -11,18 +11,6 @@ from .models import CustomUser
 from .forms import CustomUserCreationForm, CustomUserAuthenticationForm
 
 # Create your views here.
-class OwnerOrManagerMixin(LoginRequiredMixin):
-    owner_lookup = 'created_by'
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-
-        user = self.request.user
-
-        if user.is_superuser or user.groups.filter(name="Manager").exists():
-            return qs
-        return qs.filter(**{self.owner_lookup: user})
-
 class RegistrationView(FormView):
     template_name = 'register.html'
     form_class = CustomUserCreationForm

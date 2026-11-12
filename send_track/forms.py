@@ -60,33 +60,3 @@ class MailingForm(forms.ModelForm):
     class Meta:
         model = Mailing
         fields = ('start_time', 'end_time', 'message', 'recipients')
-
-#MailingAttempts
-class MailingAttemptForm(forms.ModelForm):
-    attempt_time = forms.DateTimeField(
-        label='Время попытки',
-        widget=forms.DateTimeInput(
-            attrs={'type': 'datetime-local', 'class': 'form-control'},
-            format='%Y-%m-%dT%H:%M'
-        ),
-        input_formats=['%Y-%m-%dT%H:%M']
-    )
-    status = forms.ChoiceField(
-        label='Статус',
-        choices=MailingAttempt._meta.get_field('status').choices,
-        widget=forms.Select(attrs={'class': 'form-select'})
-    )
-    server_response = forms.CharField(
-        label='Ответ сервера',
-        required=False,
-        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 4})
-    )
-    mailing = forms.ModelChoiceField(
-        queryset=Mailing.objects.all(),
-        label='Рассылка',
-        widget=forms.Select(attrs={'class': 'form-select'})
-    )
-
-    class Meta:
-        model = MailingAttempt
-        fields = ('attempt_time', 'status', 'server_response', 'mailing')

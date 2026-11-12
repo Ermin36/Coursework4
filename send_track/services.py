@@ -44,7 +44,7 @@ def send_mailing(mailing):
     now = timezone.now()
 
     # Проверка периода: рассылка должна быть активна
-    if not (mailing.start_time <= now <= mailing.end_time):
+    if not (mailing.start_time <= now <= mailing.end_time) or not mailing.is_active:
         return {'sent': 0, 'failed': 0, 'skipped': True}
 
     sent = 0
@@ -75,6 +75,7 @@ def send_active_mailings():
     mailings = Mailing.objects.filter(
         start_time__lte=now,
         end_time__gte=now,
+        is_active=True,
     ).prefetch_related('recipients')
 
     result = {'processed': 0, 'sent': 0, 'failed': 0, 'skipped': 0}

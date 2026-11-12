@@ -8,9 +8,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from msg_client.models import Client
 from .models import Mailing, MailingAttempt
-from .forms import MailingForm, MailingAttemptForm
+from .forms import MailingForm
 from .services import send_mailing, send_active_mailings
-from users.views import OwnerOrManagerMixin
 
 # Create your views here.
 
@@ -119,11 +118,10 @@ class MailingDelete(LoginRequiredMixin, DeleteView):
     template_name = 'mailing/delete.html'
     success_url = reverse_lazy('send_track:mailing_list')
 
-class MailingList(OwnerOrManagerMixin, ListView):
+class MailingList(LoginRequiredMixin, ListView):
     model = Mailing
     template_name = 'mailing/list.html'
     context_object_name = 'mailings'
-    owner_lookup = 'created_by'
 
     def get_queryset(self):
         return super().get_queryset().annotate(
@@ -133,20 +131,6 @@ class MailingList(OwnerOrManagerMixin, ListView):
 
 
 #MailingAttempt Data
-class MailingAttemptCreate(LoginRequiredMixin, CreateView):
-    model = MailingAttempt
-    form_class = MailingAttemptForm
-    template_name = 'mailing_attempt/create.html'
-    context_object_name = 'attempt'
-    success_url = reverse_lazy('send_track:mailing_attempt_list')
-
-class MailingAttemptUpdate(LoginRequiredMixin, UpdateView):
-    model = MailingAttempt
-    form_class = MailingAttemptForm
-    template_name = 'mailing_attempt/update.html'
-    context_object_name = 'attempt'
-    success_url = reverse_lazy('send_track:mailing_attempt_list')
-
 class MailingAttemptDetail(LoginRequiredMixin, DetailView):
     model = MailingAttempt
     template_name = 'mailing_attempt/detail.html'
@@ -158,8 +142,7 @@ class MailingAttemptDelete(LoginRequiredMixin, DeleteView):
     context_object_name = 'mailing_attempt'
     success_url = reverse_lazy('send_track:mailing_attempt_list')
 
-class MailingAttemptList(OwnerOrManagerMixin, ListView):
+class MailingAttemptList(LoginRequiredMixin, ListView):
     model = MailingAttempt
     template_name = 'mailing_attempt/list.html'
     context_object_name = 'mailing_attempts'
-    owner_lookup = 'mailing__created_by'

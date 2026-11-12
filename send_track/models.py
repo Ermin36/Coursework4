@@ -16,10 +16,11 @@ class Mailing(models.Model):
 
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
-    status = models.CharField(choices=STATUS_CHOICES, default='created', max_length=20)
-    message = models.ForeignKey(Message, on_delete=models.CASCADE)
+    status = models.CharField(choices=STATUS_CHOICES, default='created', max_length=20, verbose_name='Статус')
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, verbose_name='Сообщение')
     recipients = models.ManyToManyField(Client, related_name='mailings', verbose_name='Получатели')
-    created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='Создатель')
+    is_active = models.BooleanField(default=True, verbose_name='Активна')
 
     def clean(self):
         if self.start_time and self.end_time:
@@ -77,11 +78,15 @@ class Mailing(models.Model):
     class Meta:
         verbose_name = "Рассылка"
         verbose_name_plural = "Рассылки"
+        permissions = [
+            ('view_all_mailings', 'Может просматривать все рассылки'),
+            ('disable_mailing', 'Может отключать рассылки'),
+        ]
 
 
 class MailingAttempt(models.Model):
 
-    attempt_time = models.DateTimeField()
+    attempt_time = models.DateTimeField(auto_now_add=True)
     status = models.CharField(choices=(
         ('ok', 'Успешно'),
         ('error', 'Не успешно')
@@ -96,3 +101,6 @@ class MailingAttempt(models.Model):
     class Meta:
         verbose_name = 'Статус рассылки'
         verbose_name_plural = 'Статусы рассылок'
+        permissions = [
+            ('view_all_mailings', 'Может просматривать все попытки'),
+        ]
