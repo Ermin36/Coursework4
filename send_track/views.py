@@ -76,6 +76,26 @@ class MailingSendAll(LoginRequiredMixin, View):
 
         return redirect('send_track:mailing_list')
 
+class MailingDisableView(ManagerMixin, View):
+    """Переключает флаг is_active у рассылки (отключить/включить)."""
+    owner = 'created_by'
+    perms = ('send_track.disable_mailing',)
+
+    def post(self, request, pk):
+        mailing = get_object_or_404(Mailing, pk=pk)
+
+        if not request.user.has_perm('send_track.disable_mailing'):
+            messages.error(request, 'У вас нет прав на отключение рассылок.')
+            return redirect('send_track:mailing_detail', pk=pk)
+
+        mailing.is_active = not mailing.is_active
+        mailing.save(update_fields=['is_active'])
+
+        action = 'включена' if mailing.is_active else 'отключена'
+        messages.success(request, f'Рассылка №{mailing.pk} {action}.')
+
+        return redirect('send_track:mailing_list')
+
 
 #Mailing Data
 class MailingCreate(LoginRequiredMixin, CreateView):

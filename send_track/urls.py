@@ -3,7 +3,7 @@ from django.urls import path
 from send_track.apps import SendTrackConfig
 from .views import (Home, MailingList, MailingDelete, MailingCreate, MailingDetail, MailingUpdate,
     MailingAttemptList, MailingAttemptDelete, MailingAttemptDetail,
-    MailingSend, MailingSendAll)
+    MailingSend, MailingSendAll, MailingDisableView)
 
 app_name = SendTrackConfig.name
 
@@ -17,6 +17,7 @@ urlpatterns = [
     path('mailings/<int:pk>/delete/', MailingDelete.as_view(), name='mailing_delete'),
     path('mailings/<int:pk>/send/', MailingSend.as_view(), name='mailing_send'),
     path('mailings/send-all/', MailingSendAll.as_view(), name='mailing_send_all'),
+    path('mailings/<int:pk>/disable/', MailingDisableView.as_view(), name='mailing_disable'),
 
     #MailingAttempts
     path('mailing_attempts/', MailingAttemptList.as_view(), name='mailing_attempt_list'),

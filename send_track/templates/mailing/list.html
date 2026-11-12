@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 
-
 {% block content %}
 <div class="container-fluid px-3">
     <h2 class="text-white fw-bold mb-4">Рассылки</h2>
@@ -11,7 +10,6 @@
             Создать рассылку
         </a>
 
-        <!-- {% url 'send_track:mailing_send_all' %} -->
         <form action="{% url 'send_track:mailing_send_all' %}" method="post" style="display:inline-block;">
             {% csrf_token %}
             <button type="submit"
@@ -45,6 +43,7 @@
 
                     <div class="row g-3 align-items-start ps-5">
                         <div class="col-md-9 col-12">
+                            {% if mailing.is_active %}
                             <span class="badge
                                 {% if mailing.dynamic_status == 'created' %}bg-secondary{% endif %}
                                 {% if mailing.dynamic_status == 'launched' %}bg-success{% endif %}
@@ -52,6 +51,13 @@
                                 text-uppercase fw-bold fs-6">
                                 {{ mailing.dynamic_status_display }}
                             </span>
+                            {% endif %}
+
+                            {% if not mailing.is_active %}
+                                <span class="badge bg-warning text-dark text-uppercase fw-bold fs-6 ms-1">
+                                    Отключена
+                                </span>
+                            {% endif %}
 
                             <div class="mt-3 position-relative">
                                 <div class="progress bg-secondary rounded-pill" style="height: 6px;">
@@ -104,28 +110,40 @@
                             {% endif %}
                         </div>
 
-                        <!-- Отправка отдельно от карточки -->
+                        <!-- Кнопки действий -->
                         <div class="col-md-1 col-12 d-flex flex-column gap-2">
+
                             {% if user.is_superuser or mailing.owner == user %}
-                                {% if mailing.dynamic_status != 'completed' and mailing.dynamic_status != 'created' %}
-                                <!-- {% url 'send_track:mailing_send' mailing.pk %} -->
-                                <form action="{% url 'send_track:mailing_send' mailing.pk %}" method="post">
-                                    {% csrf_token %}
-                                    <button type="submit"
-                                            class="btn btn-sm btn-outline-success w-100"
-                                            onclick="return confirm('Отправить рассылку «{{ mailing.message.topic }}»?');">
-                                        Отправить
-                                    </button>
-                                </form>
+                                {% if mailing.dynamic_status != 'completed' and mailing.dynamic_status != 'created' and mailing.is_active %}
+                                    <form action="{% url 'send_track:mailing_send' mailing.pk %}" method="post">
+                                        {% csrf_token %}
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-success w-100"
+                                                onclick="return confirm('Отправить рассылку «{{ mailing.message.topic }}»?');">
+                                            Отправить
+                                        </button>
+                                    </form>
                                 {% endif %}
                             {% endif %}
+
+                            {% if perms.send_track.disable_mailing %}
+                                <form action="{% url 'send_track:mailing_disable' mailing.pk %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit"
+                                            class="btn btn-sm {% if mailing.is_active %}btn-outline-warning{% else %}btn-outline-secondary{% endif %} w-100"
+                                            onclick="event.stopPropagation(); return confirm('{% if mailing.is_active %}Отключить{% else %}Включить{% endif %} рассылку «{{ mailing.message.topic }}»?');">
+                                        {% if mailing.is_active %}Отключить{% else %}Включить{% endif %}
+                                    </button>
+                                </form>
+                            {% endif %}
+
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <p class="text-muted">Рассылок пока нет.</p>
+        <p class="text-secondary">Рассылок пока нет.</p>
     {% endif %}
 </div>
 {% endblock %}

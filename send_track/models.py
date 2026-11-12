@@ -11,7 +11,8 @@ class Mailing(models.Model):
     STATUS_CHOICES = (
         ('created', 'Создана'),
         ('launched', 'Запущена'),
-        ('completed', 'Завершена')
+        ('completed', 'Завершена'),
+        ('stopped', 'Оключена')
     )
 
     start_time = models.DateTimeField()
@@ -37,7 +38,9 @@ class Mailing(models.Model):
         """Пересчитывает статус по текущему времени и сохраняет в базе, если он изменился."""
         now = timezone.now()
 
-        if now < self.start_time:
+        if not self.is_active:
+            new_status = 'stopped'
+        elif now < self.start_time:
             new_status = 'created'
         elif now > self.end_time:
             new_status = 'completed'
