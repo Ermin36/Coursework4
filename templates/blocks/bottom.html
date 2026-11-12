@@ -1,15 +1,88 @@
-<!-- Выпадающий список -->
-                <div class="col-auto d-none d-md-block">
-                    <div class="dropdown">
-                        <button class="btn btn-outline-light px-3 fs-6 dropdown-toggle" type="button" id="mobileMenuBtn" data-bs-toggle="dropdown" aria-expanded="false">
-                            Меню
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end bg-dark border-secondary text-white" aria-labelledby="mobileMenuBtn">
-                            <li><a class="dropdown-item text-white text-uppercase fw-medium" href="{% url 'send_track:home' %}">Главная</a></li>
-                            <li><a class="dropdown-item text-white text-uppercase fw-medium" href="{% url 'send_track:mailing_list' %}">Рассылки</a></li>
-                            <li><a class="dropdown-item text-white text-uppercase fw-medium" href="{% url 'msg_client:message_list' %}">Сообщения</a></li>
-                            <li><a class="dropdown-item text-white text-uppercase fw-medium" href="{% url 'msg_client:client_list' %}">Клиенты</a></li>
-                            <li><a class="dropdown-item text-white text-uppercase fw-medium" href="{% url 'send_track:mailing_attempt_list' %}">Статистика</a></li>
-                        </ul>
-                    </div>
+{% comment %}Кнопка-триггер: логотип MailerPro{% endcomment %}
+<div class="col-auto">
+    <button class="btn btn-link text-decoration-none text-uppercase fw-bold fs-5 text-white p-0"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#mainMenu"
+            aria-controls="mainMenu">
+        MailerPro <i class="bi bi-list fs-4 align-middle"></i>
+    </button>
+</div>
+
+<!-- Выезжающая панель слева -->
+<div class="offcanvas offcanvas-start text-bg-dark border-end border-secondary"
+     tabindex="-1"
+     id="mainMenu"
+     aria-labelledby="mainMenuLabel"
+     style="width: 280px;">
+    <div class="offcanvas-header pt-4 px-3 border-bottom border-secondary">
+        <a href="{% url 'send_track:home' %}" class="text-decoration-none text-uppercase fw-bold fs-5 text-white">MailerPro</a>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Закрыть"></button>
+    </div>
+
+    <div class="offcanvas-body d-flex flex-column px-3 py-3">
+        <!-- Кнопки навигации — столбиком -->
+        <nav class="d-flex flex-column gap-2">
+            <a href="{% url 'send_track:mailing_list' %}"
+               class="btn btn-sm btn-outline-light text-uppercase fw-medium">
+                Рассылки
+            </a>
+            <a href="{% url 'msg_client:message_list' %}"
+               class="btn btn-sm btn-outline-light text-uppercase fw-medium">
+                Сообщения
+            </a>
+            <a href="{% url 'msg_client:client_list' %}"
+               class="btn btn-sm btn-outline-light text-uppercase fw-medium">
+                Клиенты
+            </a>
+            <a href="{% url 'send_track:mailing_attempt_list' %}"
+               class="btn btn-sm btn-outline-light text-uppercase fw-medium">
+                Статистика
+            </a>
+        </nav>
+
+        <!-- Профиль — прижат вниз -->
+        <div class="mt-auto pt-3 border-top border-secondary">
+            {% if user.is_authenticated %}
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-dark border-secondary d-flex align-items-center gap-2 w-100 text-start"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                        {% if user.image %}
+                            <img src="{{ user.image.url }}" alt="" class="rounded-circle flex-shrink-0" width="28" height="28" style="object-fit: cover;">
+                        {% else %}
+                            <i class="bi bi-person-circle fs-5 text-secondary"></i>
+                        {% endif %}
+                        <span class="text-truncate">{{ user.email }}</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-start bg-dark border-secondary">
+                        <li>
+                            <a class="dropdown-item text-white" href="#">
+                                <i class="bi bi-person me-2"></i>Профиль
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider border-secondary"></li>
+                        <li>
+                            <form action="{% url 'users:logout' %}" method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="dropdown-item text-danger">
+                                    <i class="bi bi-box-arrow-right me-2"></i>Выйти
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
                 </div>
+            {% else %}
+                <a href="{% url 'users:login' %}"
+                   class="btn btn-sm btn-outline-light text-uppercase fw-medium w-100 mb-2">
+                    Войти
+                </a>
+                <a href="{% url 'users:register' %}"
+                   class="btn btn-sm btn-light text-uppercase fw-medium w-100">
+                    Регистрация
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
