@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="col-12 col-lg-10">
+    <div class="card bg-dark border-secondary">
+        <div class="card-header bg-transparent border-secondary d-flex justify-content-between align-items-center">
+            <h4 class="text-uppercase fw-bold mb-0">Пользователи</h4>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th scope="col">Аватар</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Телефон</th>
+                        <th scope="col">Статус</th>
+                        <th scope="col" class="text-end">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td>
+                            {% if u.image %}
+                                <img src="{{ u.image.url }}" alt="" class="rounded-circle" width="36" height="36" style="object-fit: cover;">
+                            {% else %}
+                                <i class="bi bi-person-circle fs-4 text-secondary"></i>
+                            {% endif %}
+                        </td>
+                        <td>{{ u.email }}</td>
+                        <td>{{ u.phone_number|default:'—' }}</td>
+                        <td>
+                            {% if u.is_active %}
+                                <span class="badge bg-success">Активен</span>
+                            {% else %}
+                                <span class="badge bg-danger">Заблокирован</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            {% if not u.is_superuser and u != request.user %}
+                                <form action="{% url 'users:user_block' u.pk %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    {% if u.is_active %}
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-danger"
+                                                onclick="return confirm('Заблокировать пользователя {{ u.email }}?');">
+                                            <i class="bi bi-lock me-1"></i>Заблокировать
+                                        </button>
+                                    {% else %}
+                                        <button type="submit" class="btn btn-sm btn-outline-success">
+                                            <i class="bi bi-unlock me-1"></i>Разблокировать
+                                        </button>
+                                    {% endif %}
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-secondary py-4">Пользователей нет</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

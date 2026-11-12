@@ -39,6 +39,12 @@
                class="btn btn-sm btn-outline-light text-uppercase fw-medium">
                 Статистика
             </a>
+            {% if perms.users.is_manager or user.is_superuser %}
+                <a href="{% url 'users:users_list' %}"
+                   class="btn btn-sm btn-outline-light text-uppercase fw-medium">
+                    Пользователи
+                </a>
+            {% endif %}
         </nav>
 
         <!-- Профиль — прижат вниз -->

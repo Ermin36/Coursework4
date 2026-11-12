@@ -1,5 +1,8 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.views import View
+from django.views.generic import ListView
 from django.views.generic.edit import FormView
 from django.contrib.auth import login
 from django.contrib.auth.views import LoginView, LogoutView
@@ -18,7 +21,7 @@ class OwnerOrManagerMixin(LoginRequiredMixin):
 
         if user.is_superuser or user.groups.filter(name="Manager").exists():
             return qs
-        return qs.filter({self.owner_lookup: user})
+        return qs.filter(**{self.owner_lookup: user})
 
 class RegistrationView(FormView):
     template_name = 'register.html'
@@ -37,6 +40,7 @@ class CustomLoginView(LoginView):
     success_url = reverse_lazy('send_track:home')
 
     def form_invalid(self, form):
+        print(form.errors)
         return super().form_invalid(form)
 
     def get_success_url(self):
@@ -45,3 +49,27 @@ class CustomLoginView(LoginView):
 class CustomLogoutView(LogoutView):
     #template_name = 'logout.html'
     next_page = reverse_lazy('send_track:home')
+
+
+class ManagerRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    """Доступ только для менеджеров и суперпользователей."""
+
+    def test_func(self):
+        user = self.request.user
+        return user.is_superuser or user.groups.filter(name='Manager').exists()
+
+class CustomUserList(ManagerRequiredMixin, ListView):
+    model = CustomUser
+    template_name = 'user/list.html'
+    context_object_name = 'users'
+
+class UserBlockToggleView(ManagerRequiredMixin, View):
+    def post(self, request, pk):
+        user = get_object_or_404(CustomUser, pk=pk)
+
+        # Нельзя заблокировать суперпользователя или самого себя
+        if not user.is_superuser and user != request.user:
+            user.is_active = not user.is_active
+            user.save(update_fields=['is_active'])
+
+        return redirect('users:users_list')
