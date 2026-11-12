@@ -20,6 +20,7 @@ def _send_to_client(mailing, client):
             status='ok',
             server_response='Письмо успешно отправлено',
             mailing=mailing,
+            client=client,
         )
         return True
     except Exception as e:

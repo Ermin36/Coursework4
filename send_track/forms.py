@@ -43,15 +43,18 @@ class MailingForm(forms.ModelForm):
             )
         return start_time
 
+    def clean_end_time(self):
+        end_time = self.cleaned_data['end_time']
+        start_time = self.cleaned_data['start_time']
+
+        if end_time < start_time:
+            raise forms.ValidationError(
+                'Время окончания должно быть позже времени начала.'
+            )
+        return end_time
+
     def clean(self):
         cleaned_data = super().clean()
-        start_time = cleaned_data.get('start_time')
-        end_time = cleaned_data.get('end_time')
-
-        if start_time and end_time:
-            if end_time <= start_time:
-                self.add_error('end_time', 'Время окончания должно быть позже времени начала.')
-
         return cleaned_data
 
     class Meta:
