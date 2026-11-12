@@ -42,6 +42,9 @@
             <span class="text-secondary">Нет аккаунта?</span>
             <a href="{% url 'users:register' %}" class="text-info text-decoration-none fw-medium">Зарегистрироваться</a>
         </div>
+        <a href="{% url 'users:password_reset' %}" class="text-info small text-decoration-none">
+            Забыли пароль?
+        </a>
     </div>
 </div>
 {% endblock %}
