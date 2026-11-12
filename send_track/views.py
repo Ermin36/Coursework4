@@ -10,6 +10,7 @@ from msg_client.models import Client
 from .models import Mailing, MailingAttempt
 from .forms import MailingForm, MailingAttemptForm
 from .services import send_mailing, send_active_mailings
+from users.views import OwnerOrManagerMixin
 
 # Create your views here.
 
@@ -84,6 +85,10 @@ class MailingCreate(LoginRequiredMixin, CreateView):
     context_object_name = 'mailing'
     success_url = reverse_lazy('send_track:mailing_list')
 
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
+
 class MailingUpdate(LoginRequiredMixin, UpdateView):
     template_name = 'mailing/update.html'
     model = Mailing
@@ -114,13 +119,14 @@ class MailingDelete(LoginRequiredMixin, DeleteView):
     template_name = 'mailing/delete.html'
     success_url = reverse_lazy('send_track:mailing_list')
 
-class MailingList(LoginRequiredMixin, ListView):
+class MailingList(OwnerOrManagerMixin, ListView):
     model = Mailing
     template_name = 'mailing/list.html'
     context_object_name = 'mailings'
+    owner_lookup = 'created_by'
 
     def get_queryset(self):
-        return Mailing.objects.annotate(
+        return super().get_queryset().annotate(
             total_attempts=Count('attempts', distinct=True),
             success_attempts=Count('attempts', filter=Q(attempts__status='ok'), distinct=True),
         )
@@ -152,7 +158,8 @@ class MailingAttemptDelete(LoginRequiredMixin, DeleteView):
     context_object_name = 'mailing_attempt'
     success_url = reverse_lazy('send_track:mailing_attempt_list')
 
-class MailingAttemptList(LoginRequiredMixin, ListView):
+class MailingAttemptList(OwnerOrManagerMixin, ListView):
     model = MailingAttempt
     template_name = 'mailing_attempt/list.html'
     context_object_name = 'mailing_attempts'
+    owner_lookup = 'mailing__created_by'

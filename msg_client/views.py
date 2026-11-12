@@ -5,11 +5,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from msg_client.forms import MessageForm, ClientForm
 from msg_client.models import Client, Message
+from users.views import OwnerOrManagerMixin
 
 
 # Create your views here.
 #Clients
-class ClientListView(LoginRequiredMixin, ListView):
+class ClientListView(OwnerOrManagerMixin, ListView):
     model = Client
     template_name = 'client/list.html'
     context_object_name = 'clients'
@@ -24,6 +25,10 @@ class ClientCreateView(LoginRequiredMixin, CreateView):
     form_class = ClientForm
     template_name = 'client/create.html'
     success_url = reverse_lazy('msg_client:client_list')
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
 
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
     model = Client

@@ -1,8 +1,8 @@
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 
 from msg_client.models import Message, Client
+from users.models import CustomUser
 
 
 # Create your models here.
@@ -16,9 +16,10 @@ class Mailing(models.Model):
 
     start_time = models.DateTimeField()
     end_time = models.DateTimeField()
-    status = models.CharField(choices=STATUS_CHOICES)
+    status = models.CharField(choices=STATUS_CHOICES, default='created', max_length=20)
     message = models.ForeignKey(Message, on_delete=models.CASCADE)
     recipients = models.ManyToManyField(Client, related_name='mailings', verbose_name='Получатели')
+    created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
     def clean(self):
         if self.start_time and self.end_time:
@@ -87,6 +88,7 @@ class MailingAttempt(models.Model):
     ))
     server_response = models.TextField()
     mailing = models.ForeignKey(Mailing, on_delete=models.CASCADE, related_name='attempts')
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.attempt_time}: {self.status}'

@@ -1,5 +1,8 @@
 from django.db import models
 
+from users.models import CustomUser
+
+
 # Create your models here.
 class Message(models.Model):
     topic = models.CharField(max_length=200)
@@ -19,6 +22,7 @@ class Client(models.Model):
     last_name = models.CharField(max_length=100)
     middle_name = models.CharField(max_length=100, null=True, blank=True)
     comment = models.TextField()
+    created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
 
     def __str__(self):
