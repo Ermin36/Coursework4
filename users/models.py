@@ -28,7 +28,7 @@ class CustomManagerUser(BaseUserManager):
 
 class CustomUser(AbstractUser):
     email = models.EmailField(unique=True)
-    image = models.ImageField(default='default.jpg', upload_to='images/', blank=True, null=True)
+    image = models.ImageField(default='default.jpeg', upload_to='images/', blank=True, null=True)
     phone_number = models.CharField(max_length=11, blank=True, null=True)
 
     objects = CustomManagerUser()
